@@ -1,0 +1,247 @@
+# auth_screens.kv - Authentication screens (Login and Register)
+
+
+
+<ScreenManager>:
+    transition: FadeTransition(duration=0.2)
+
+# Login Screen (Glassy UI Version) - Already has glassy background
+<LoginScreen>:
+    RelativeLayout:
+        AsyncImage:
+            source: 'https://images.unsplash.com/photo-1512358958014-b651a7ee1773?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bW9uZXklMjBiaWxsJTIwcGF5bWVudCUyMHRoZW1lfGVufDB8fDB8fHww'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                
+
+        Widget:
+            size_hint_y:0.2       
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(30)
+            spacing: dp(20)
+
+            Widget:
+            
+            BoxLayout:
+                size_hint: None, None
+                size: dp(100), dp(100)
+                pos_hint: {'center_x': 0.5}
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        source: "login_logo.png"
+                        pos: self.pos
+                        size: self.size
+                        radius: [self.width / 2,] # This makes it a circle
+
+
+            Widget:
+                size_hint_y:0.1
+
+            Label:
+                text: "Welcome, SmartPayer"
+                font_size: sp(28)
+                bold: True
+                color: 1, 1, 1, 1
+                size_hint_y: 
+                height: self.texture_size[1]
+                halign: 'center'
+
+            
+
+            GlassyCard:
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(20), dp(25)
+                valign: 'center'
+
+                Widget:
+                    size_hint_y:0.1
+
+                GlassyTextInput:
+                    id: email_input
+                    hint_text: 'Email'
+                    color: 1, 1, 1, 1
+
+                GlassyTextInput:
+                    id: password_input
+                    hint_text: 'Password'
+                    password: True
+                    color: 1, 1, 1, 1
+
+
+                GlassyButton:
+                    text: 'Login'
+                    size_hint: None, None
+                    size: dp(600), dp(100) # Set a fixed width and height
+                    pos_hint: {'center_x': 0.5}
+                    bold: True
+                    font_size: sp(16)
+                    color: 1, 1, 1, 1
+                    on_release: app.login(email_input.text, password_input.text)
+                    
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(40)
+                spacing: dp(5)
+                Widget:
+                    #size_hint_x: 0.
+
+                Label:
+                    id: dont_have_account
+                    text: "Don't have an account?"
+                    color: 1, 1, 1, 0.7
+                    font_size: sp(14)
+                    size_hint_x: None
+                    width: self.texture_size[0]
+                    valign: 'middle'
+                
+                Button:
+                    id: sign_up_button
+                    text: "Sign Up"
+                    background_color: 0, 0, 0, 0
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: sp(14)
+                    size_hint_x: None
+                    width: self.texture_size[0]
+                    valign: 'middle'
+                    on_release: root.manager.current = 'register'
+
+                Widget:
+                    #size_hint_x: 0.5
+
+            Widget:
+
+# Register Screen (Glassy UI Version) - Already has glassy background
+<RegisterScreen>:
+    name: 'register'
+    RelativeLayout:
+        AsyncImage:
+            source: 'https://images.unsplash.com/photo-1512358958014-b651a7ee1773?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bW9uZXklMjBiaWxsJTIwcGF5bWVudCUyMHRoZW1lfGVufDB8fDB8fHww'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # Main vertical layout
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(15)
+
+            # Back button and icon header
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(40)
+
+                IconButton:
+                    bg_color: [0, 0, 0, 0] # Make the button's background transparent
+                    size_hint: None, None
+                    size: dp(30), dp(30)
+                    pos_hint: {'left': 1, 'center_y': 0.5}
+                    on_release: root.manager.current = 'login'
+                    canvas.before:
+                        # Draw the light gray circle background first
+                        Color:
+                            rgba: colors('#e9ecef') 
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [self.width/2,]
+                        # Now draw the image on top
+                        Color:
+                            rgba: colors('#4361ee')
+                        Rectangle:
+                            source: 'back.png'
+                            size: dp(15), dp(15)
+                            pos: self.x + self.width/2 - dp(7.5), self.y + self.height/2 - dp(7.5)
+
+
+                Widget:
+                    size_hint_x: 0.8
+            
+            # Spacer
+            Widget:
+                size_hint_y: None
+                height: dp(5)
+            
+            # Main content container for the title and form
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(15)
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(40)
+                    
+                    Label:
+                        text: 'Create Your Smart Account'
+                        font_size: sp(22)
+                        bold: True
+                        color: 1, 1, 1, 1
+                        text_size: self.width, None
+                        halign: 'center'
+                        valign: 'middle'
+
+                GlassyCard:
+                    orientation: 'vertical'
+                    spacing: dp(15)
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    GlassyTextInput:
+                        id: name_input
+                        hint_text: 'Full Name'
+
+                    GlassyTextInput:
+                        id: email_input
+                        hint_text: 'Email'
+                        input_type: 'mail'
+
+                    GlassyTextInput:
+                        id: phone_input
+                        hint_text: 'Phone Number'
+                        input_type: 'number'
+
+                    GlassyTextInput:
+                        id: password_input
+                        hint_text: 'Password'
+                        password: True
+                    
+                    Widget:
+                        size_hint_y: None
+                        height: dp(25)
+                    
+                    GlassyButton:
+                        text: 'Register'
+                        size_hint_y: None
+                        height: dp(45)
+                        bold: True
+                        font_size: sp(16)
+                        color: 1, 1, 1, 1
+                        on_release: app.register(email_input.text, password_input.text, name_input.text, phone_input.text)
+            
+            # Flexible spacer at the bottom
+            Widget:
+                size_hint_y: 1

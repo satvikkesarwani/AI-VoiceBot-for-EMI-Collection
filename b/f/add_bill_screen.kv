@@ -1,0 +1,294 @@
+# add_bill_screen.kv (Final, corrected version)
+<AddBillScreen>:
+    # The main container for the screen.
+    RelativeLayout:
+        # Background image that covers the entire screen.
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        # Main content layout that sits on top of the background image.
+        BoxLayout:
+            # Semi-transparent overlay to make text more readable.
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            orientation: 'vertical'
+            padding: dp(15)
+            spacing: dp(15)
+
+            # 1. Header Section (Back button and Title)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(15)
+
+                IconButton:
+                    bg_color: [1, 1, 1, 0.9]
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {'center_y': 0.5}
+                    on_release: root.manager.current = 'dashboard'
+                    canvas.before:
+                        Color:
+                            rgba: self.bg_color
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [self.width / 2]
+                        Color:
+                            rgba: 0, 0, 0, 1
+                        Rectangle:
+                            source: 'back.png'
+                            size: dp(20), dp(20)
+                            pos: self.center_x - dp(10), self.center_y - dp(10)
+
+                Label:
+                    text: 'Edit User Details' if root.is_edit_mode else 'Add User Details'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+            # 2. Scrollable Content Area
+            ScrollView:
+                bar_width: 0
+                effect_cls: 'DampedScrollEffect'
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(15)
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: 0, dp(10)
+
+                    # Card 1: Bill Information
+                    CardLayout:
+                        spacing: dp(15)
+                        Label:
+                            text: 'BILL INFORMATION'
+                            font_size: sp(14)
+                            bold: True
+                            color: 1, 1, 1, 0.7
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        # ADD THIS NEW TEXT INPUT
+                        GlassyTextInput:
+                            id: account_name
+                            hint_text: 'Registered Account Name'
+                        GlassyTextInput:
+                            id: bill_name
+                            hint_text: 'To Pay (e.g., Netflix Subscription)'
+                        GlassyTextInput:
+                            id: bill_amount
+                            hint_text: 'Amount'
+                            input_type: 'number'
+                        GlassyTextInput:
+                            id: bill_due_date
+                            hint_text: 'Due Date (YYYY-MM-DD)'
+
+# ...
+
+                    # Card for Loan / EMI Details (Corrected Version)
+                    CardLayout:
+                        id: loan_details_card
+                        orientation: 'vertical'
+                        spacing: dp(12)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        Label:
+                            text: 'LOAN / EMI DETAILS'
+                            font_size: sp(14)
+                            bold: True
+                            color: 1, 1, 1, 0.7
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        GridLayout:
+                            # FIX 1: Remove the duplicate id from this line.
+                            # The parent CardLayout already has this id.
+                            cols: 1
+                            spacing: dp(20)
+                            size_hint_y: None
+                            
+                            # FIX 2: Add this line to make the grid calculate its own height.
+                            # This is the main fix for the visual overlap.
+                            height: self.minimum_height 
+                            
+                            row_default_height: dp(40)
+                            padding: dp(5)
+
+                            # Row 1: Total Amount
+                            BoxLayout:
+                                spacing: dp(10)
+                                Label:
+                                    text: "Total Amount:"
+                                    size_hint_x: 0.5
+                                    halign: "left"
+                                    valign: "middle"
+                                    font_size: sp(14)
+                                GlassyTextInput:
+                                    id: loan_total_amount
+                                    hint_text: "₹ Total Amount"
+                                    size_hint_x: 0.5
+                                    input_type: 'number' # Added input_type for numeric keyboard
+
+                            # Row 2: Monthly EMI
+                            BoxLayout:
+                                spacing: dp(10)
+                                Label:
+                                    text: "Monthly EMI:"
+                                    size_hint_x: 0.5
+                                    halign: "left"
+                                    valign: "middle"
+                                    font_size: sp(14)
+                                GlassyTextInput:
+                                    id: loan_monthly_payment
+                                    hint_text: "₹ Monthly Payment"
+                                    size_hint_x: 0.5
+                                    input_type: 'number' # Added input_type
+
+                            # ...The rest of your loan detail rows (Installments, etc.) remain unchanged...
+                            # Row 3: Installments
+                            BoxLayout:
+                                spacing: dp(10)
+                                Label:
+                                    text: "Installments:"
+                                    size_hint_x: 0.5
+                                    halign: "left"
+                                    valign: "middle"
+                                    font_size: sp(14)
+                                GlassyTextInput:
+                                    id: loan_installments
+                                    hint_text: "Number of EMIs"
+                                    size_hint_x: 0.5
+                                    input_type: 'number' # Added input_type
+
+                            # Row 4: Already Paid
+                            BoxLayout:
+                                spacing: dp(10)
+                                Label:
+                                    text: "Already Paid:"
+                                    size_hint_x: 0.5
+                                    halign: "left"
+                                    valign: "middle"
+                                    font_size: sp(14)
+                                GlassyTextInput:
+                                    id: loan_already_paid
+                                    hint_text: "0"
+                                    text: "0" # Default to 0
+                                    size_hint_x: 0.5
+                                    input_type: 'number' # Added input_type
+
+                            # Row 5: Interest Rate
+                            BoxLayout:
+                                spacing: dp(10)
+                                Label:
+                                    text: "Interest Rate%:"
+                                    size_hint_x: 0.5
+                                    halign: "left"
+                                    valign: "middle"
+                                    font_size: sp(14)
+                                GlassyTextInput:
+                                    id: loan_interest_rate
+                                    hint_text: "0"
+                                    text: "0" # Default to 0
+                                    size_hint_x: 0.5
+                                    input_type: 'number' # Added input_type
+
+
+                    # Card 3: Bill Details (using BoxLayouts for precise alignment)
+                    CardLayout:
+                        spacing: dp(12)
+                        
+                        BoxLayout: # Category Row
+                            size_hint_y: None
+                            height: dp(40)
+                            spacing: dp(10)
+                            Label:
+                                text: 'Category:'
+                                size_hint_x: 0.35
+                                text_size: self.size
+                                halign: 'left'
+                                valign: 'middle'
+                            GlassySpinner:
+                                id: bill_category
+                                text: 'utilities'
+                                values: ['Personal Loan', 'Home Loan', 'Car Loan', 'Education Loan', 'Business Loan', 'Gold Loan', 'Other Loan']
+
+
+                        BoxLayout: # Frequency Row
+                            size_hint_y: None
+                            height: dp(40)
+                            spacing: dp(10)
+                            Label:
+                                text: 'Frequency:'
+                                size_hint_x: 0.35
+                                text_size: self.size
+                                halign: 'left'
+                                valign: 'middle'
+                            GlassySpinner:
+                                id: bill_frequency
+                                text: 'monthly'
+                                values: ['once', 'weekly', 'monthly', 'quarterly', 'yearly']
+
+                        BoxLayout: # Voice Call Reminder Row
+                            size_hint_y: None
+                            height: dp(40)
+                            spacing: dp(10)
+                            Label:
+                                text: 'Voice Call Reminder:'
+                                size_hint_x: 0.65
+                                text_size: self.size
+                                halign: 'left'
+                                valign: 'middle'
+                            
+                            ToggleButton:
+                                id: enable_call_switch
+                                size_hint: None, None
+                                size: dp(60), dp(30)
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                background_normal: 'toggle_off.png' # <-- Use an image for the off state
+                                background_down: 'toggle_on.png' # <-- Use an image for the on state
+                                on_state: root.on_switch_toggle(self, 'enable_call_switch')
+
+
+                    # Card 4: Notes
+                    CardLayout:
+                        spacing: dp(15)
+                        Label:
+                            text: 'NOTES'
+                            font_size: sp(14)
+                            bold: True
+                            color: 1, 1, 1, 0.7
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+                        GlassyTextInput:
+                            id: bill_notes
+                            hint_text: 'Additional notes...'
+                            multiline: True
+                            height: dp(100)
+
+            # 3. Save Button (outside the ScrollView)
+            GlassyButton:
+                text: 'UPDATE BILL' if root.is_edit_mode else 'SAVE BILL'
+                size_hint_y: None
+                height: dp(50)
+                bold: True
+                font_size: sp(16)
+                on_release: root.save_bill()

@@ -1,0 +1,325 @@
+# Settings Screen
+<SettingsScreen>:
+    RelativeLayout:
+        # Add the same background image and overlay as other screens
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # Main content of the SettingsScreen
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(15)
+
+            # Header with back button and title
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+
+                # 1. Left Item: The Back Button (with back.png)
+                IconButton:
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {'center_y': 0.5}
+                    on_release: root.manager.current = 'dashboard'
+                    canvas.before:
+                        # Draw the gray circle background
+                        Color:
+                            rgba: colors('#e9ecef')
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [self.width/2,]
+                        # Draw the back.png image on top, tinted blue
+                        Color:
+                            rgba: colors('#4361ee')
+                        Rectangle:
+                            source: 'back.png'
+                            size: self.width * 0.5, self.height * 0.5
+                            pos: self.center_x - (self.width * 0.25), self.center_y - (self.height * 0.25)
+
+                # 2. Center Item: The Title
+                Label:
+                    text: 'Settings'
+                    font_size: sp(28)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    size_hint_x: 1
+                    halign: 'center'
+                    valign: 'middle'
+
+                # 3. Right Item: An invisible spacer for balance
+                Widget:
+                    size_hint_x: None
+                    width: dp(40)
+
+            Widget: # Spacer
+                size_hint_y: None
+                height: dp(10)
+
+            ScrollView:
+                bar_width: 0 # Hide the scrollbar
+                effect_cls: 'DampedScrollEffect' # Add smooth scrolling effect
+                size_hint_y: 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(20)
+                    padding: [dp(0), dp(10)]
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    CardLayout: # Reminder Channels
+                        orientation: 'vertical'
+                        spacing: dp(10)
+                        padding: dp(15)
+
+                        Label:
+                            text: 'Reminder Channels'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        # WhatsApp Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'WhatsApp'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ToggleButton:
+                                id: whatsapp_switch
+                                size_hint: None, None
+                                size: dp(60), dp(30)
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                background_normal: 'toggle_off.png' # <-- Use an image for the off state
+                                background_down: 'toggle_on.png' # <-- Use an image for the on state
+                                on_state: root.save_settings_on_toggle(self) # ADD THIS LINE
+
+                        # Voice Call Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'Voice Call'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ToggleButton:
+                                id: call_switch
+                                size_hint: None, None
+                                size: dp(60), dp(30)
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                background_normal: 'toggle_off.png' # <-- Use an image for the off state
+                                background_down: 'toggle_on.png' # <-- Use an image for the on state
+                                on_state: root.save_settings_on_toggle(self) # ADD THIS LINE
+
+                        # SMS Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'SMS'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ToggleButton:
+                                id: sms_switch
+                                size_hint: None, None
+                                size: dp(60), dp(30)
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                background_normal: 'toggle_off.png' # <-- Use an image for the off state
+                                background_down: 'toggle_on.png' # <-- Use an image for the on state
+                                on_state: root.save_settings_on_toggle(self) # ADD THIS LINE
+
+                        # App Notifications Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'App Notifications'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ToggleButton:
+                                id: notification_switch
+                                size_hint: None, None
+                                size: dp(60), dp(30)
+                                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                                background_normal: 'toggle_off.png' # <-- Use an image for the off state
+                                background_down: 'toggle_on.png' # <-- Use an image for the on state
+                                on_state: root.save_settings_on_toggle(self) # ADD THIS LINE
+
+                    CardLayout: # Reminder Timing
+                        orientation: 'vertical'
+                        spacing: dp(10)
+                        padding: dp(15)
+
+                        Label:
+                            text: 'Reminder Timing'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        # Days Before Due Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40) # Set row height
+                            Label:
+                                text: 'Days Before Due:'
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                                color: 1, 1, 1, 1
+                            GlassyTextInput:
+                                id: days_before_input
+                                text: '3'
+                                input_type: 'number'
+                                multiline: False
+                                size_hint_x: 0.4
+                                # --- Temporary Overrides ---
+                                height: dp(40)
+                                padding: self.padding[0], (self.height - self.font_size) / 2
+
+                        # Preferred Time Row
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40) # Set row height
+                            Label:
+                                text: 'Preferred Time:'
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                                color: 1, 1, 1, 1
+                            GlassyTextInput:
+                                id: preferred_time_input
+                                text: '09:00'
+                                multiline: False
+                                size_hint_x: 0.4
+                                # --- Temporary Overrides ---
+                                height: dp(40)
+                                padding: self.padding[0], (self.height - self.font_size) / 2
+
+                    CardLayout: # Test Reminders section
+                        orientation: 'vertical'
+                        spacing: dp(15)
+
+                        Label:
+                            text: 'Test Reminders'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: dp(50)
+
+                            # --- WhatsApp Button ---
+                            IconLabelButton:
+                                on_release: root.test_reminder('whatsapp')
+                                size_hint_x: 0.5
+                                spacing: dp(10)
+
+                                Widget: # Left spacer
+                                RoundedImage:
+                                    source: 'whatsapp_icon.png'
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+                                    pos_hint: {'center_y': 0.5}
+                                Label:
+                                    text: 'WhatsApp Test'
+                                    bold: True
+                                    font_size: sp(12)
+                                    size_hint_x: None
+                                    width: self.texture_size[0]
+                                    pos_hint: {'center_y': 0.5}
+                                Widget: # Right spacer
+
+                            # --- Call Button ---
+                            IconLabelButton:
+                                on_release: root.test_reminder('call')
+                                size_hint_x: 0.5
+                                spacing: dp(10)
+
+                                Widget: # Left spacer
+                                RoundedImage:
+                                    source: 'call_icon.png'
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+                                    pos_hint: {'center_y': 0.5}
+                                Label:
+                                    text: 'Call Test'
+                                    bold: True
+                                    font_size: sp(12)
+                                    size_hint_x: None
+                                    width: self.texture_size[0]
+                                    pos_hint: {'center_y': 0.5}
+                                Widget: # Right spacer
+
+                    GlassyButton: # SAVE SETTINGS button
+                        text: 'SAVE SETTINGS'
+                        bold: True
+                        font_size: sp(16)
+                        on_release: root.save_settings()
+                        
+                        # --- Temporary Overrides ---
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: dp(50)
+                        canvas.before:
+                            Color:
+                                rgba: self._color_down if self.state == 'down' else self._color_normal
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+
+                    GlassyButton: # LOGOUT button
+                        text: 'LOGOUT'
+                        bold: True
+                        font_size: sp(16)
+                        on_release: root.logout()
+
+                        # --- Temporary Overrides ---
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: dp(50)
+                        # Special styling for a destructive action button
+                        _color_normal: colors('#e63946')
+                        _color_down: [c * 0.8 for c in colors('#e63946')]
+                        canvas.before:
+                            Color:
+                                rgba: self._color_down if self.state == 'down' else self._color_normal
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]

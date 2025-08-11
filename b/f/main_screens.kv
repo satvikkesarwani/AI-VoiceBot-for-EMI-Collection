@@ -1,0 +1,843 @@
+# Dashboard Screen
+<DashboardScreen>:
+    name: 'dashboard'
+
+    RelativeLayout:
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(15)
+            spacing: dp(10)
+            pos_hint: {'top': 1, 'left': 0}
+            size_hint: 1, None
+            height: self.parent.height - self.parent.ids.nav_bar_container.height if self.parent and self.parent.ids and 'nav_bar_container' in self.parent.ids else self.parent.height
+
+            Widget:
+                size_hint_y: None
+                height: dp(20)
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(70)
+                padding: dp(15), dp(10)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.6
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(12),]
+                    Color:
+                        rgba: 1, 1, 1, 0.4
+                    Line:
+                        width: 1.5
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(12))
+
+                Label:
+                    text: 'My Bills'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+                IconButton:
+                    text: '+'
+                    bg_color: colors('#4361ee')
+                    text_color: colors('#ffffff')
+                    font_size: sp(24)
+                    pos_hint: {'center_y': 0.5}
+                    on_release:
+                        root.manager.get_screen('add_bill').clear_form()
+                        root.manager.current = 'add_bill'
+
+            BoxLayout:
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)
+                size_hint_y: 1
+
+                Label:
+                    text: 'UPCOMING PAYMENTS'
+                    font_size: sp(13)
+                    color: 1, 1, 1, 1
+                    bold: True
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.width, None
+                    halign: 'left'
+                    padding: dp(10), 0
+
+                ScrollView:
+                    bar_width: 0
+                    effect_cls: 'DampedScrollEffect'
+                    BoxLayout:
+                        id: bills_list
+                        orientation: 'vertical'
+                        spacing: dp(15)
+                        padding: dp(5)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+        BoxLayout:
+            id: nav_bar_container
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60)
+            pos_hint: {'x': 0, 'y': 0}
+            size_hint_x: 1
+            padding: 0
+            spacing: 0
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 0.6
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                Color:
+                    rgba: 1, 1, 1, 0.4
+                Line:
+                    width: 1.5
+                    points: self.x, self.y + self.height, self.x + self.width, self.y + self.height
+
+            Button:
+                id: btn_home
+                text: 'Home'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                font_size: sp(15)
+                on_release:
+                    root.manager.current = 'dashboard'
+                    root.update_nav_buttons()
+
+            Widget:
+                size_hint_x: None
+                width: dp(3)
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2
+                    Rectangle:
+                        pos: self.x, self.y + dp(10)
+                        size: self.width, self.height - dp(20)
+
+            Button:
+                id: btn_add
+                text: 'Add'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                font_size: sp(15)
+                on_release:
+                    root.manager.get_screen('add_bill').clear_form()
+                    root.manager.current = 'add_bill'
+
+            Widget:
+                size_hint_x: None
+                width: dp(3)
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2
+                    Rectangle:
+                        pos: self.x, self.y + dp(10)
+                        size: self.width, self.height - dp(20)
+
+            Button:
+                id: btn_settings
+                text: 'Settings'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                font_size: sp(15)
+                on_release:
+                    root.manager.current = 'settings'
+                    root.update_nav_buttons()
+
+# Add/Edit Bill Screen with Loan Tracking
+<AddBillScreen>:
+    RelativeLayout:
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(20)
+
+            # Header Section
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(70)
+                padding: dp(15), dp(10)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(12),]
+                    Color:
+                        rgba: 1, 1, 1, 0
+                    Line:
+                        width: 1.5
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(12))
+
+                IconButton:
+                    bg_color: [0, 0, 0, 0]
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {'center_y': 0.5}
+                    on_release: root.manager.current = 'dashboard'
+                    canvas.before:
+                        Color:
+                            rgba: colors('#e9ecef')
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [self.width/2,]
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            source: 'back.png'
+                            size: dp(20), dp(20)
+                            pos: self.x + self.width/2 - dp(10), self.y + self.height/2 - dp(10)
+                
+                Widget:
+                    size_hint_x: None
+                    width: dp(20)
+
+                Label:
+                    text: 'Edit Bill' if root.is_edit_mode else 'Add Bill'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    size_hint_x: 1
+                    text_size: self.width, None
+                    halign: 'center'
+                    valign: 'center'
+
+                Widget:
+                    size_hint_x: None
+                    width: dp(60)
+
+            # Scrollable Content Section
+            ScrollView:
+                bar_width: 0
+                effect_cls: 'DampedScrollEffect'
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(15)
+                    padding: [dp(0), dp(20), dp(0), dp(0)]
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    # Bill Information Card
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        CardLayout:
+                            orientation: 'vertical'
+                            spacing: dp(15)
+                            Label:
+                                text: 'Bill Information'
+                                font_size: sp(16)
+                                bold: True
+                                color: 1, 1, 1, 1
+                                size_hint_y: None
+                                height: dp(30)
+                                text_size: self.width, None
+                                halign: 'left'
+                            GlassyTextInput:
+                                id: bill_name
+                                hint_text: 'To Pay'
+                                color: 1, 1, 1, 1
+                                bold: True
+                            GlassyTextInput:
+                                id: bill_amount
+                                hint_text: 'Amount'
+                                input_type: 'number'
+                                color: 1, 1, 1, 1
+                                bold: True
+                            GlassyTextInput:
+                                id: bill_due_date
+                                hint_text: 'Due Date (YYYY-MM-DD)'
+                                color: 1, 1, 1, 1
+                                bold: True
+
+                    # Bill Details Card
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        CardLayout:
+                            orientation: 'vertical'
+                            spacing: dp(12)
+                            Label:
+                                text: 'Bill Details'
+                                font_size: sp(16)
+                                bold: True
+                                color: 1, 1, 1, 1
+                                size_hint_y: None
+                                height: dp(30)
+                                text_size: self.width, None
+                                halign: 'left'
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                size_hint_y: None
+                                height: dp(40)
+                                spacing: dp(10)
+                                Label:
+                                    text: 'Category:'
+                                    size_hint_x: 0.4
+                                    text_size: self.width, None
+                                    halign: 'left'
+                                    valign: 'middle'
+                                    color: 1, 1, 1, 1
+                                GlassySpinner:
+                                    id: bill_category
+                                    text: 'utilities'
+                                    values: ['utilities', 'rent', 'insurance', 'subscription', 'loan', 'credit_card', 'other']
+                                    size_hint_x: 0.6
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                size_hint_y: None
+                                height: dp(40)
+                                spacing: dp(10)
+                                Label:
+                                    text: 'Frequency:'
+                                    size_hint_x: 0.4
+                                    text_size: self.width, None
+                                    halign: 'left'
+                                    valign: 'middle'
+                                    color: 1, 1, 1, 1
+                                GlassySpinner:
+                                    id: bill_frequency
+                                    text: 'monthly'
+                                    values: ['once', 'weekly', 'monthly', 'quarterly', 'yearly']
+                                    size_hint_x: 0.6
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                size_hint_y: None
+                                height: dp(40)
+                                spacing: dp(10)
+                                Label:
+                                    text: 'Voice Call Reminder:'
+                                    size_hint_x: 0.7
+                                    text_size: self.width, None
+                                    halign: 'left'
+                                    valign: 'middle'
+                                    color: 1, 1, 1, 1
+                                ModernSwitch:
+                                    id: enable_call_switch
+                                    pos_hint: {'center_y': 0.5}
+
+                    # Loan/EMI Details Card
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        CardLayout:
+                            orientation: 'vertical'
+                            spacing: dp(12)
+                            
+                            # Loan Toggle Header
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                size_hint_y: None
+                                height: dp(40)
+                                Label:
+                                    text: 'Is this a Loan/EMI?'
+                                    font_size: sp(16)
+                                    bold: True
+                                    color: 1, 1, 1, 1
+                                    size_hint_x: 0.7
+                                    text_size: self.width, None
+                                    halign: 'left'
+                                    valign: 'middle'
+                                ModernSwitch:
+                                    id: loan_switch
+                                    pos_hint: {'center_y': 0.5}
+                                    on_active: root.toggle_loan_details(self.active)
+                            
+                            # Loan Details Section (Initially hidden)
+                            BoxLayout:
+                                id: loan_details_card
+                                orientation: 'vertical'
+                                spacing: dp(10)
+                                size_hint_y: None
+                                height: 0
+                                opacity: 0
+                                disabled: False
+                                
+                                # Total Loan Amount
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    spacing: dp(10)
+                                    Label:
+                                        text: 'Total Loan Amount:'
+                                        size_hint_x: 0.5
+                                        text_size: self.width, None
+                                        halign: 'left'
+                                        valign: 'middle'
+                                        color: 1, 1, 1, 1
+                                        font_size: sp(14)
+                                    GlassyTextInput:
+                                        id: total_loan_amount
+                                        hint_text: '₹ Total Amount'
+                                        input_type: 'number'
+                                        size_hint_x: 0.5
+                                        color: 1, 1, 1, 1
+                                        bold: True
+                                
+                                # Monthly EMI
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    spacing: dp(10)
+                                    Label:
+                                        text: 'Monthly EMI:'
+                                        size_hint_x: 0.5
+                                        text_size: self.width, None
+                                        halign: 'left'
+                                        valign: 'middle'
+                                        color: 1, 1, 1, 1
+                                        font_size: sp(14)
+                                    GlassyTextInput:
+                                        id: monthly_emi
+                                        hint_text: '₹ Monthly Payment'
+                                        input_type: 'number'
+                                        size_hint_x: 0.5
+                                        color: 1, 1, 1, 1
+                                        bold: True
+                                
+                                # Total Installments
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    spacing: dp(10)
+                                    Label:
+                                        text: 'Total Installments:'
+                                        size_hint_x: 0.5
+                                        text_size: self.width, None
+                                        halign: 'left'
+                                        valign: 'middle'
+                                        color: 1, 1, 1, 1
+                                        font_size: sp(14)
+                                    GlassyTextInput:
+                                        id: total_installments
+                                        hint_text: 'Number of EMIs'
+                                        input_type: 'number'
+                                        size_hint_x: 0.5
+                                        color: 1, 1, 1, 1
+                                        bold: True
+                                
+                                # Installments Already Paid
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    spacing: dp(10)
+                                    Label:
+                                        text: 'Already Paid:'
+                                        size_hint_x: 0.5
+                                        text_size: self.width, None
+                                        halign: 'left'
+                                        valign: 'middle'
+                                        color: 1, 1, 1, 1
+                                        font_size: sp(14)
+                                    GlassyTextInput:
+                                        id: installments_paid
+                                        hint_text: 'Installments paid'
+                                        text: '0'
+                                        input_type: 'number'
+                                        size_hint_x: 0.5
+                                        color: 1, 1, 1, 1
+                                        bold: True
+                                
+                                # Interest Rate (Optional)
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    size_hint_y: None
+                                    height: dp(40)
+                                    spacing: dp(10)
+                                    Label:
+                                        text: 'Interest Rate (%):'
+                                        size_hint_x: 0.5
+                                        text_size: self.width, None
+                                        halign: 'left'
+                                        valign: 'middle'
+                                        color: 1, 1, 1, 1
+                                        font_size: sp(14)
+                                    GlassyTextInput:
+                                        id: interest_rate
+                                        hint_text: 'Annual rate %'
+                                        text: '0'
+                                        input_type: 'number'
+                                        size_hint_x: 0.5
+                                        color: 1, 1, 1, 1
+                                        bold: True
+                                
+                                # Loan Summary Info
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    size_hint_y: None
+                                    height: dp(60)
+                                    padding: dp(10)
+                                    canvas.before:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.3
+                                        RoundedRectangle:
+                                            pos: self.pos
+                                            size: self.size
+                                            radius: [dp(8),]
+                                    Label:
+                                        id: loan_summary
+                                        text: 'Fill in the details above to see loan summary'
+                                        font_size: sp(12)
+                                        color: 1, 1, 1, 0.8
+                                        text_size: self.width, None
+                                        halign: 'center'
+                                        valign: 'middle'
+
+                    # Notes Card
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        CardLayout:
+                            orientation: 'vertical'
+                            spacing: dp(15)
+                            Label:
+                                text: 'Notes'
+                                font_size: sp(16)
+                                bold: True
+                                color: 1, 1, 1, 1
+                                size_hint_y: None
+                                height: dp(30)
+                                text_size: self.width, None
+                                halign: 'left'
+                            GlassyTextInput:
+                                id: bill_notes
+                                hint_text: 'Additional notes...'
+                                multiline: True
+                                size_hint_y: None
+                                height: dp(100)
+
+                    # Save Button
+                    GlassyButton:
+                        text: 'UPDATE BILL' if root.is_edit_mode else 'SAVE BILL'
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: dp(50)
+                        bold: True
+                        font_size: sp(16)
+                        on_release: root.save_bill()
+                        canvas.before:
+                            Color:
+                                rgba: self._color_down if self.state == 'down' else self._color_normal
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+
+# Settings Screen
+<SettingsScreen>:
+    RelativeLayout:
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(15)
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+
+                IconButton:
+                    size_hint: None, None
+                    size: dp(40), dp(40)
+                    pos_hint: {'center_y': 0.5}
+                    on_release: root.manager.current = 'dashboard'
+                    canvas.before:
+                        Color:
+                            rgba: colors('#e9ecef')
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [self.width/2,]
+                        Color:
+                            rgba: colors('#4361ee')
+                        Rectangle:
+                            source: 'back.png'
+                            size: self.width * 0.5, self.height * 0.5
+                            pos: self.center_x - (self.width * 0.25), self.center_y - (self.height * 0.25)
+
+                Label:
+                    text: 'Settings'
+                    font_size: sp(28)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    size_hint_x: 1
+                    halign: 'center'
+                    valign: 'middle'
+
+                Widget:
+                    size_hint_x: None
+                    width: dp(40)
+
+            Widget:
+                size_hint_y: None
+                height: dp(10)
+
+            ScrollView:
+                bar_width: 0
+                effect_cls: 'DampedScrollEffect'
+                size_hint_y: 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(20)
+                    padding: [dp(0), dp(10)]
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    CardLayout:
+                        orientation: 'vertical'
+                        spacing: dp(10)
+                        padding: dp(15)
+
+                        Label:
+                            text: 'Reminder Channels'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'WhatsApp'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ModernSwitch:
+                                id: whatsapp_switch
+                                size_hint_x: None
+                                width: self.size[0]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'Voice Call'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ModernSwitch:
+                                id: call_switch
+                                size_hint_x: None
+                                width: self.size[0]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'SMS'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ModernSwitch:
+                                id: sms_switch
+                                size_hint_x: None
+                                width: self.size[0]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'App Notifications'
+                                color: 1, 1, 1, 1
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                            ModernSwitch:
+                                id: notification_switch
+                                size_hint_x: None
+                                width: self.size[0]
+
+                    CardLayout:
+                        orientation: 'vertical'
+                        spacing: dp(10)
+                        padding: dp(15)
+
+                        Label:
+                            text: 'Reminder Timing'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'Days Before Due:'
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                                color: 1, 1, 1, 1
+                            GlassyTextInput:
+                                id: days_before_input
+                                text: '3'
+                                input_type: 'number'
+                                multiline: False
+                                size_hint_x: 0.4
+                                height: dp(40)
+                                padding: self.padding[0], (self.height - self.font_size) / 2
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            Label:
+                                text: 'Preferred Time:'
+                                text_size: self.width, None
+                                halign: 'left'
+                                valign: 'middle'
+                                color: 1, 1, 1, 1
+                            GlassyTextInput:
+                                id: preferred_time_input
+                                text: '09:00'
+                                multiline: False
+                                size_hint_x: 0.4
+                                height: dp(40)
+                                padding: self.padding[0], (self.height - self.font_size) / 2
+
+                    CardLayout:
+                        orientation: 'vertical'
+                        spacing: dp(15)
+
+                        Label:
+                            text: 'Test Reminders'
+                            font_size: sp(16)
+                            bold: True
+                            color: 1, 1, 1, 1
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.width, None
+                            halign: 'left'
+
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: dp(50)
+
+                            IconLabelButton:
+                                on_release: root.test_reminder('whatsapp')
+                                size_hint_x: 0.5
+                                spacing: dp(10)
+
+                                Widget:
+                                RoundedImage:
+                                    source: 'whatsapp_icon.png'
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+                                    pos_hint: {'center_y': 0.5}
+                                Label:
+                                    text: 'WhatsApp Test'
+                                    bold: True
+                                    font_size: sp(12)
+                                    size_hint_x: None
+                                    width: self.texture_size[0]
+                                    pos_hint: {'center_y': 0.5}
+                                Widget:
+
+                            IconLabelButton:
+                                on_release: root.test_reminder('call')
+                                size_hint_x: 0.5
+                                spacing: dp(10)
+
+                                Widget:
+                                RoundedImage:
+                                    source: 'call_icon.png'
+                                    size_hint: None, None
+                                    size: dp(24), dp(24)
+                                    pos_hint: {'center_y': 0.5}
+                                Label:
+                                    text: 'Call Test'
+                                    bold: True
+                                    font_size: sp(12)
+                                    size_hint_x: None
+                                    width: self.texture_size[0]
+                                    pos_hint: {'center_y': 0.5}
+                                Widget:
+
+                    GlassyButton:
+                        text: 'SAVE SETTINGS'
+                        bold: True
+                        font_size: sp(16)
+                        on_release: root.save_settings()
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: dp(50)
+                        canvas.before:
+                            Color:
+                                rgba: self._color_down if self.state == 'down' else self._color_normal
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+
+                    GlassyButton:
+                        text: 'LOGOUT'
+                        bold: True
+                        font_size: sp(16)
+                        on_release: root.logout()
+                        size_hint_x: 1
+                        size_hint_y: None
+                        height: dp(50)
+                        _color_normal: colors('#e63946')
+                        _color_down: [c * 0.8 for c in colors('#e63946')]
+                        canvas.before:

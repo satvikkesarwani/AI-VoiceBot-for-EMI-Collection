@@ -1,0 +1,172 @@
+# Dashboard Screen
+<DashboardScreen>:
+    name: 'dashboard' # Ensure the screen has a name for manager transitions
+
+    RelativeLayout: # Main container for background image and overlay
+        AsyncImage:
+            source: 'new_bg.jpg'
+            fit_mode: 'cover'
+
+        BoxLayout: # Dark overlay for contrast
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.4
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        # This BoxLayout will contain all the main content of the dashboard,
+        # positioned above the navigation bar.
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(15) # Padding for the content area
+            spacing: dp(10)
+            pos_hint: {'top': 1, 'left': 0}
+            size_hint: 1, None # Full width, height will be calculated
+            # Calculate height to fill space above the nav bar
+            # This ensures the content area doesn't overlap with the navigation bar
+            height: self.parent.height - self.parent.ids.nav_bar_container.height if self.parent and self.parent.ids and 'nav_bar_container' in self.parent.ids else self.parent.height
+
+            Widget: # Added to push the header down
+                size_hint_y: None
+                height: dp(20) # This value controls the vertical position of the header
+
+            BoxLayout: # Header
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(70)
+                padding: dp(15), dp(10)
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.6 # Semi-transparent header bar
+                    RoundedRectangle: # Rounded corners for the header
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(12),] # Apply rounded corners
+                    Color:
+                        rgba: 1, 1, 1, 0.4 # Light border for the header
+                    Line:
+                        width: 1.5
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(12))
+
+                Label:
+                    text: 'My Users'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1 # White text for the title
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+                IconButton:
+                    text: '+'
+                    bg_color: colors('#4361ee')
+                    text_color: colors('#ffffff')
+                    font_size: sp(24)
+                    pos_hint: {'center_y': 0.5}
+                    on_release:
+                        root.manager.get_screen('add_bill').clear_form()
+                        root.manager.current = 'add_bill'
+
+            BoxLayout: # Upcoming Payments section
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)
+                size_hint_y: 1 # This will expand to fill the remaining space
+
+                Label:
+                    text: 'UPCOMING PAYMENTS'
+                    font_size: sp(13)
+                    color: 1, 1, 1, 1 # Lighter gray for text on dark background
+                    bold: True
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.width, None
+                    halign: 'left'
+                    padding: dp(10), 0
+
+                ScrollView:
+                    bar_width: 0 # Hide the scrollbar
+                    effect_cls: 'DampedScrollEffect' # Add smooth scrolling effect
+                    BoxLayout:
+                        id: bills_list
+                        orientation: 'vertical'
+                        spacing: dp(15)
+                        padding: dp(5)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+        # Navigation Bar - Moved to be a direct child of RelativeLayout
+        BoxLayout:
+            id: nav_bar_container # Added an ID to reference its height for the content area
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60) # Reduced height for a more compact look
+            pos_hint: {'x': 0, 'y': 0} # Stick to the very bottom-left corner
+            size_hint_x: 1 # Ensure it spans full width
+            padding: 0 # Remove all padding to stick to edges
+            spacing: 0 # Changed spacing to 0 to control spacing with separators
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 0.6 # Semi-transparent navigation bar background
+                Rectangle: # Use Rectangle for sharp corners and flush look
+                    pos: self.pos
+                    size: self.size
+                Color:
+                    rgba: 1, 1, 1, 0.4 # Light border color
+                Line:
+                    width: 1.5
+                    # Draw a line only at the top of the navigation bar for a clean border
+                    points: self.x, self.y + self.height, self.x + self.width, self.y + self.height
+
+            Button:
+                id: btn_home
+                text: 'Home'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1 # White text for nav buttons
+                font_size: sp(15) # Adjusted font size for smaller bar
+                on_release:
+                    root.manager.current = 'dashboard'
+                    root.update_nav_buttons()
+
+            Widget: # Separator 1
+                size_hint_x: None
+                width: dp(3) # Increased width for a bolder line
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2 # Color of the separator line (light gray/white)
+                    Rectangle:
+                        pos: self.x, self.y + dp(10) # Adjusted Y to center vertically in new height
+                        size: self.width, self.height - dp(20) # Adjusted height for new bar height
+
+            Button:
+                id: btn_add
+                text: 'Add'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1 # White text for nav buttons
+                font_size: sp(15) # Adjusted font size for smaller bar
+                on_release:
+                    root.manager.get_screen('add_bill').clear_form()
+                    root.manager.current = 'add_bill'
+
+            Widget: # Separator 2
+                size_hint_x: None
+                width: dp(3) # Increased width for a bolder line
+                canvas:
+                    Color:
+                        rgba: 1, 1, 1, 0.2 # Color of the separator line (light gray/white)
+                    Rectangle:
+                        pos: self.x, self.y + dp(10) # Adjusted Y to center vertically in new height
+                        size: self.width, self.height - dp(20) # Adjusted height for new bar height
+
+            Button:
+                id: btn_settings
+                text: 'Settings'
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                font_size: sp(15)
+                on_release:
+                    root.manager.current = 'settings'
+                    root.update_nav_buttons()
+
+            

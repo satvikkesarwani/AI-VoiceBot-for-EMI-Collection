@@ -1,0 +1,469 @@
+# styles.kv - Common styles and reusable components
+# billsreminder.kv
+
+#:import dp kivy.metrics.dp
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+#:import colors kivy.utils.get_color_from_hex
+#:import ButtonBehavior kivy.uix.behaviors.button.ButtonBehavior
+#:import FloatLayout kivy.uix.floatlayout.FloatLayout
+#:import Animation kivy.animation.Animation
+#:import AsyncImage kivy.uix.image.AsyncImage
+#:import Switch kivy.uix.switch.Switch
+#:import Spinner kivy.uix.spinner.Spinner
+#:import RelativeLayout kivy.uix.relativelayout.RelativeLayout
+
+
+# Color palette
+<ColorPalette>:
+    primary: colors('#4361ee')
+    secondary: colors('#3a0ca3')
+    accent: colors('#f72585')
+    success: colors('#4cc9f0')
+    danger: colors('#e63946')
+    light: colors('#f8f9fa')
+    dark: colors('#212529')
+    gray: colors('#6c757d')
+    light_gray: colors('#e9ecef')
+
+# --- Styles for the Glassy UI ---
+
+# Replace your existing <GlassySpinner> rule with this:
+<GlassySpinner@Spinner>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    color: 1, 1, 1, 1
+    size_hint_y: None
+    height: dp(40)
+    font_size: sp(15)
+    halign: 'center'  # <-- Changed to 'center'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.2
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+        Color:
+            rgba: (1, 1, 1, 0.6) if self.is_open else (1, 1, 1, 0.2)
+        Line:
+            width: 1.5 if self.is_open else 1.2
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+
+
+
+<SpinnerOption>:
+    background_color: colors('#3a0ca3') # A theme color for highlighting the selected option
+    color: 1, 1, 1, 1 # White text
+    height: dp(45)
+    font_size: sp(15)
+    padding: dp(15), 0 # Indent the text
+
+
+
+<IconLabelButton>:
+    # This canvas code provides the blue, rounded background
+    canvas.before:
+        Color:
+            rgba: colors('#3a0ca3') if self.state == 'down' else colors('#4361ee')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.height / 2,]
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 0.7 if self.hovering else 0
+        Line:
+            width: dp(1.5)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, self.height / 2)
+
+# In billsreminder.kv (near the top)
+
+<RoundedImage@Widget>:
+    source: ''
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            source: self.source
+            pos: self.pos
+            size: self.size
+            radius: [min(self.width, self.height) / 2]
+
+<GlassyCard>:
+    orientation: 'vertical'
+    padding: dp(25)
+    spacing: dp(20)
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 0.6 # Dark, semi-transparent glass for a premium feel
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(20),]
+        Color:
+            rgba: 1, 1, 1, 0.4 # Prominent "dark white" border
+        Line:
+            width: 1.5
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))
+
+
+<ModernSwitch>:
+    size_hint: None, None
+    size: dp(55), dp(32) # A more standard size for a toggle switch
+    canvas.before:
+        # Draw the pill-shaped track
+        Color:
+            rgba: self._track_color_active if self.active else self._track_color_inactive
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.height / 2,]
+
+    # This is the circular thumb that slides
+    FloatLayout:
+        id: thumb
+        size_hint: None, None
+        size: root.height - dp(8), root.height - dp(8)
+        # Initial position is set in the python class
+        canvas:
+            Color:
+                rgba: root._thumb_color
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [self.height / 2,]
+
+
+# In billsreminder.kv
+<GlassyTextInput>:
+    multiline: False
+    padding: dp(15), (self.height - self.font_size) / 2
+
+    # --- THE FIX IS HERE ---
+    # This disables Kivy's default grey background graphics completely.
+    background_normal: ''
+    background_active: ''
+    # We still need this to make the color layer transparent.
+    background_color: 0, 0, 0, 0
+
+    # These properties will now work as expected.
+    color: 1, 1, 1, 1
+    bold: True
+
+    # Other properties
+    hint_text_color: 1, 1, 1, 0.5
+    cursor_color: 1, 1, 1, 1
+    cursor_width: dp(2)
+    size_hint_y: None
+    height: dp(55)
+    font_size: sp(16)
+
+    canvas.before:
+        # This is our custom background, which is drawn underneath the text.
+        Color:
+            rgba: 0, 0, 0, 0.2
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+        Color:
+            rgba: (1, 1, 1, 0.6) if self.focus else (1, 1, 1, 0.2)
+        Line:
+            width: 1.5 if self.focus else 1.2
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(10))
+
+<GlassyButton>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    background_down: ''
+    # Define the colors the button will use
+    _color_normal: colors('#4361ee')  # Primary blue
+    _color_down: colors('#3a0ca3')   # Darker secondary blue
+    
+    canvas.before:
+        Color:
+            rgba: self._color_down if self.state == 'down' else self._color_normal
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.height / 2,] # Dynamically half the height
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 0.7 if self.hovering else 0
+        Line:
+            width: dp(1.5)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, self.height / 2)
+
+
+    # Animate the button's scale on press and release
+    on_press:
+        Animation(scale=0.95, duration=0.08).start(self)
+    on_release:
+        Animation(scale=1.0, duration=0.08).start(self)
+    
+    # Use the scale property for the animation
+    scale_x: self.scale
+    scale_y: self.scale
+    size_hint: (None, None)
+    size: self.texture_size[0] + dp(40), self.texture_size[1] + dp(20) # Dynamic size
+    pos_hint: {'center_x': 0.5}
+
+
+
+# --- Original Custom Widgets (Adjusted for Glassy Background) ---
+
+<RoundedButton>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    background_down: ''
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+        Color:
+            rgba: colors('#ffffff') if self.background_color[0] > 0.7 else colors('#ffffff')
+        Line:
+            rounded_rectangle: self.x, self.y, self.width, self.height, dp(10)
+            width: 1.5
+
+<IconButton>:
+    size_hint: None, None
+    size: dp(40), dp(40)
+    background_color: 0, 0, 0, 0
+    bg_color: [0, 0, 0, 0]
+    text_color: [1, 1, 1, 1]
+    color: root.text_color
+    canvas.before:
+        Color:
+            rgba: root.bg_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(20),]
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 0.5 if self.hovering else 0
+        Line:
+            width: dp(0.8)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, self.height / 2)
+            
+<CustomTextInput>: # Keeping this for AddBillScreen/SettingsScreen, but adjusting colors for dark background
+    multiline: False
+    padding: dp(15), dp(15)
+    background_color: 0, 0, 0, 0.2 # Semi-transparent background
+    foreground_color: 1, 1, 1, 1 # White text
+    hint_text_color: 1, 1, 1, 0.5 # Light hint text
+    cursor_color: 1, 1, 1, 1
+    cursor_width: dp(2)
+    size_hint_y: None
+    height: dp(55)
+    font_size: sp(16)
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 0.2 # Light border
+        Line:
+            width: 1.2
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
+
+<CardLayout>: # Adjusting for glassy background
+    orientation: 'vertical'
+    padding: dp(15)
+    spacing: dp(10)
+    size_hint_y: None
+    height: self.minimum_height
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 0.6 # Dark, semi-transparent background
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12),]
+        Color:
+            rgba: 1, 1, 1, 0.4 # Light border
+        Line:
+            width: 0.8
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(12))
+
+
+
+
+
+
+# --- Screen Definitions ---
+
+# Bill Item Widget
+# Replace your existing <BillItem> rule with this one:
+<BillItem>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(100)
+    padding: dp(12)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: colors('#ffffff')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(16),]
+        Color:
+            rgba: colors('#e9ecef')
+        Line:
+            width: 1
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(16))
+
+    # Left side: Bill details
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.5 # <-- Final adjustment to 50%
+        spacing: dp(4)
+
+
+        # ADD THIS NEW LABEL FOR ACCOUNT NAME
+        Label:
+            id: account_name
+            text: 'Account Name'
+            font_size: sp(13)
+            color: colors('#6c757d') # Gray color for secondary text
+            text_size: self.width, None
+            halign: 'left'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'right'
+
+        Label:
+            id: bill_name
+            text: 'Bill Name'
+            font_size: sp(17)
+            bold: True
+            color: colors('#212529')
+            text_size: self.width, None
+            halign: 'left'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'right'
+
+        Label:
+            id: bill_amount
+            text: '₹0.0'
+            font_size: sp(16)
+            bold: True
+            color: colors('#4361ee')
+            text_size: self.width, None
+            halign: 'left'
+            valign: 'middle'
+
+        Label:
+            id: bill_due_date
+            text: 'Due: --'
+            font_size: sp(13)
+            color: colors('#6c757d')
+            text_size: self.width, None
+            halign: 'left'
+            valign: 'middle'
+
+    # Right side: Status and action buttons
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.5 # <-- Final adjustment to 50%
+        spacing: dp(8)
+        pos_hint: {'center_y': 0.5}
+
+        Label:
+            id: status_label
+            text: 'PENDING'
+            font_size: sp(11)
+            bold: True
+            color: colors('#e63946')
+            size_hint_y: None
+            height: self.texture_size[1] + dp(8)
+            canvas.before:
+                Color:
+                    rgba: colors('#ffe5e7') if self.text == 'PENDING' else colors('#e8f8f5')
+                RoundedRectangle:
+                    pos: self.x, self.center_y - self.height / 2
+                    size: self.width, self.height
+                    radius: [self.height / 2,]
+
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: dp(5)
+            pos_hint: {'center_x': 0.5}
+
+            # --- Button 1: paid bill---
+            IconButton:
+                on_release: root.mark_as_paid()
+                bg_color: colors('#4cc9f0') if root.bill_data.get('is_paid', False) else colors('#e9ecef')
+                canvas.before:
+                    Color:
+                        rgba: self.bg_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [self.width / 2,]
+                    Color:
+                        rgba: colors('#ffffff') if root.bill_data.get('is_paid', False) else colors('#6c757d')
+                    Rectangle:
+                        source: 'paid.png' # Using placeholder as requested
+                        size: self.width * 0.5, self.height * 0.5
+                        pos: self.center_x - (self.width * 0.25), self.center_y - (self.height * 0.25)
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 0.5 if self.hovering else 0  # Black if hovering
+                    Line:
+                        width: dp(0.8)
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, self.width / 2)
+
+            
+
+            # --- Button 2: Edit Bill ---
+            IconButton:
+                on_release: root.edit_bill()
+                bg_color: colors('#e9ecef')
+                canvas.before:
+                    Color:
+                        rgba: self.bg_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [self.width / 2,]
+                    Color:
+                        rgba: colors('#4361ee') # Blue Icon Tint
+                    Rectangle:
+                        source: 'edit.png' # Using placeholder as requested
+                        size: self.width * 0.5, self.height * 0.5
+                        pos: self.center_x - (self.width * 0.25), self.center_y - (self.height * 0.25)
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 0.5 if self.hovering else 0  # Black if hovering
+                    Line:
+                        width: dp(0.8)
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, self.width / 2)
+
+            # --- Button 3: Delete Bill ---
+            IconButton:
+                on_release: root.delete_bill()
+                bg_color: colors('#e9ecef')
+                canvas.before:
+                    Color:
+                        rgba: self.bg_color
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [self.width / 2,]
+                    Color:
+                        rgba: colors('#e63946') # Red Icon Tint
+                    Rectangle:
+                        source: 'delete.png' # Using placeholder as requested
+                        size: self.width * 0.5, self.height * 0.5
+                        pos: self.center_x - (self.width * 0.25), self.center_y - (self.height * 0.25)
+                canvas.after:
+                    Color:
+                        rgba: 0, 0, 0, 0.5 if self.hovering else 0  # Black if hovering
+                    Line:
+                        width: dp(0.8)
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, self.width / 2)
